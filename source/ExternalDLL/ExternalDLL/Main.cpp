@@ -19,14 +19,14 @@ int main(int argc, char * argv[]) {
 	//ImageFactory::setImplementation(ImageFactory::STUDENT);
 
 
-	ImageIO::debugFolder = "D:\\Users\\wille\\OneDrive\\HU\\Vision\\VisionHenrikeWillem\\testsets\\Set A\\TestSet Images";
+	ImageIO::debugFolder = "D:\\Users\\wille\\OneDrive\\HU\\Vision\\VisionHenrikeWillem\\testsets\\test";
 	ImageIO::isInDebugMode = true; //If set to false the ImageIO class will skip any image save function calls
 
 
 
 
 	RGBImage * input = ImageFactory::newRGBImage();
-	if (!ImageIO::loadImage("D:\\Users\\wille\\OneDrive\\HU\\Vision\\VisionHenrikeWillem\\testsets\\Set A\\TestSet Images\\child-1.png", *input)) {
+	if (!ImageIO::loadImage("D:\\Users\\wille\\OneDrive\\HU\\Vision\\VisionHenrikeWillem\\testsets\\test\\test.jpg", *input)) {
 		std::cout << "Image could not be loaded!" << std::endl;
 		system("pause");
 		return 0;

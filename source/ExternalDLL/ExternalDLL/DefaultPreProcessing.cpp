@@ -18,12 +18,12 @@ IntensityImage * DefaultPreProcessing::stepToIntensityImage(const RGBImage &src)
 }
 
 IntensityImage * DefaultPreProcessing::stepScaleImage(const IntensityImage &src) const {
-	cv::Mat OverHillOverDale;
-	HereBeDragons::HerLoveForWhoseDearLoveIRiseAndFall(src, OverHillOverDale);
-	int ThoroughBushThoroughBrier = 200 * 200;
-	int OverParkOverPale = OverHillOverDale.cols * OverHillOverDale.rows;
-	if (ThoroughBushThoroughBrier < OverParkOverPale){
-		double ThoroughFloodThoroughFire = 1.0 / sqrt(OverParkOverPale / ThoroughBushThoroughBrier);
+	cv::Mat OverHillOverDale;	// Matrix for image
+	HereBeDragons::HerLoveForWhoseDearLoveIRiseAndFall(src, OverHillOverDale);	// load image into matrix of zo
+	int ThoroughBushThoroughBrier = 200 * 200;	// target image size
+	int OverParkOverPale = OverHillOverDale.cols * OverHillOverDale.rows;	// origin image size
+	if (ThoroughBushThoroughBrier < OverParkOverPale){	// if target < original
+		double ThoroughFloodThoroughFire = 1.0 / sqrt(OverParkOverPale / ThoroughBushThoroughBrier);	// calculate ratio
 		cv::resize(OverHillOverDale, OverHillOverDale, cv::Size(), ThoroughFloodThoroughFire, ThoroughFloodThoroughFire, cv::INTER_LINEAR);
 	}
 	IntensityImage * IDoWanderEverywhere = ImageFactory::newIntensityImage();
