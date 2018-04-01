@@ -12,41 +12,47 @@ IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &src)
 	return image;
 }
 
-
-uchar middlepixel(const cv::Mat & boxsample)
+Intensity middlepixel(const IntensityImage * boxsample)
 {
-	return boxsample.at<uchar>((boxsample.rows / 2), (boxsample.cols / 2));
+	return boxsample->getPixel((boxsample->getWidth() / 2), (boxsample->getHeight() / 2));
 }
 
-uchar medianpixel(const cv::Mat & boxsample)
+Intensity medianpixel(const IntensityImage * boxsample)
 {
 	std::vector<uchar> allvalues;
-	for (int x = 0; x < boxsample.cols; ++x)
-		for (int y = 0; y < boxsample.rows; ++y)
-			allvalues.push_back(boxsample.at<uchar>(y, x));
+	for (int x = 0; x < boxsample->getWidth(); ++x)
+		for (int y = 0; y < boxsample->getHeight(); ++y)
+			allvalues.push_back(boxsample->getPixel(x, y));
 	std::sort(allvalues.begin(), allvalues.end());
-	int length = boxsample.cols*boxsample.rows;
+	int length = allvalues.size();
 	return length % 2 ? allvalues[length / 2] : (allvalues[length / 2] + allvalues[length / 2 - 1]) / 2;
 }
 
-uchar linear(const cv::Mat & boxsample);
+Intensity linear(const IntensityImage * boxsample);
 
-uchar bilinear(const cv::Mat & boxsample);
+Intensity bilinear(const IntensityImage * boxsample);
 
 
-cv::Mat resize(const cv::Mat & origin, const double & ratio)
+IntensityImage * resize(const IntensityImage & origin, const IntensityImage * result, const double & ratio)
 {
-	cv::Mat newMatrix;
-	newMatrix.create(origin.cols*ratio, origin.rows*ratio, CV_8UC1); // nieuwe matrix aanmaken
-	cv::Mat boxSample;
+	//cv::Mat newMatrix;
+	//newMatrix.create(origin.cols*ratio, origin.rows*ratio, CV_8UC1); // nieuwe matrix aanmaken
+	//cv::Mat boxSample;
 	double multiplier = 1.0 / ratio;
-	for (int x = 0; x < newMatrix.cols; ++x)
-		for (int y = 0; y < newMatrix.rows; ++y)
+	IntensityImage * boxsample = ImageFactory::newIntensityImage();
+	boxsample->set(multiplier, multiplier);
+	//std::array<uchar, px> pixels;
+	
+
+	for (int x = 0; x < boxsample->getWidth(); ++x)
+		for (int y = 0; y < boxsample->getHeight; ++y)
 		{
 			for (int i = 0; i < multiplier; ++i)
 				for (int j = 0; j < multiplier; ++j)
-					boxSample.at<uchar>(j, i) = origin.at<uchar>((multiplier*y+j), (multiplier*x+i));
-			newMatrix.at<uchar>(y, x) = middlepixel(boxSample);
+					boxsample->setPixel(i, j, origin.getPixel(multiplier*x + i, multiplier*y + j));
+					//boxSample.at<uchar>(j, i) = origin.at<uchar>((multiplier*y+j), (multiplier*x+i));
+			result->setPixel(x, y, middlepixel(boxsample));	// zegt een Intensity nodig te hebben, is een Intensity, maar zeurt dat het geen IntensityImage is?
+				//newMatrix.at<uchar>(y, x) = middlepixel(boxSample);
 		}
 
 	// pixels mappen
@@ -54,23 +60,31 @@ cv::Mat resize(const cv::Mat & origin, const double & ratio)
 }
 
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
-	cv::Mat matrix;
-	// image inladen
-	matrix.create(image.getHeight(), image.getWidth(), CV_8UC1); // CV_8UC1 ???
-	for (int x = 0; x < matrix.cols; ++x)
-		for (int y = 0; y < matrix.rows; ++y)
-			matrix.at<uchar>(y, x) = image.getPixel(x, y); // at<uchar> ???
+	IntensityImage * result = ImageFactory::newIntensityImage();
 
 	int targetsize = 40000;
-	int originsize = matrix.cols * matrix.rows;
+	int originsize = image.getWidth() * image.getHeight();
+	
 	if (targetsize < originsize)
 	{
 		double ratio = 1.0 / sqrt(originsize / targetsize);	// ratio tussen oud en nieuw bepalen
-		auto target = resize(matrix, ratio);
+		result->set(ratio * image.getWidth(), ratio * image.getHeight());
+		resize(image, result, ratio);
 	}
+
+	//cv::Mat matrix;
+	// image inladen
+	//matrix.create(image.getHeight(), image.getWidth(), CV_8UC1); // CV_8UC1 ???
+	//for (int x = 0; x < matrix.cols; ++x)
+		//for (int y = 0; y < matrix.rows; ++y)
+			//matrix.at<uchar>(y, x) = image.getPixel(x, y); // at<uchar> ???
+
 	
-	// daarmee pixels per pixel bepalen
-	// waarde nieuwe pixel bepalen
+		
+		//auto target = resize(matrix, ratio); // daarmee pixels per pixel bepalen
+	}
+
+
 	// nieuwe waarde toewijzen
 }
 
