@@ -3,6 +3,7 @@
 #include "ImageFactory.h"
 #include <math.h>
 #include <iostream>
+#include <ctime>
 
 IntensityImage * StudentPreProcessing::stepToIntensityImage(const RGBImage &src) const { return nullptr; }
 
@@ -33,16 +34,19 @@ Intensity linear(const IntensityImage * boxsample)
 
 Intensity bilinear(const IntensityImage * boxsample)
 {
-	double sigma = 10;
 	const double pi = atan(1) * 4;
 	const double e = exp(1);
-	const double euler = std::exp(1.0);
-	std::cout << e << std::endl;
-	int x = boxsample->getWidth();
-	int y = boxsample->getHeight();
-	return ((1 / (2 * pi*sigma*sigma))*pow(e, (-((x*x + y*y) / (2 * sigma*sigma)))))
-	
-	//return (1/2*pi*sigma*sigma)*pow(e, (-;
+	int sigma = boxsample->getWidth();
+	double cumulative = 0;
+	double totalfactor = 0;
+	for (int x = 0; x < sigma; ++x)
+		for (int y = 0; y < sigma; ++y)
+		{
+			double factor = (1 / (2 * pi*sigma*sigma))*pow(e, (-((x*x + y*y) / (2 * sigma*sigma))));
+			cumulative += boxsample->getPixel(x, y) * factor;
+			totalfactor += factor;
+		}
+	return cumulative / totalfactor;
 }
 
 void resize(const IntensityImage & origin, IntensityImage * result, const double & ratio)
@@ -56,11 +60,14 @@ void resize(const IntensityImage & origin, IntensityImage * result, const double
 			for (int j = 0; j < multiplier; ++j)
 				for (int i = 0; i < multiplier; ++i)			
 					boxsample->setPixel(i, j, origin.getPixel(multiplier*x + i, multiplier*y + j));
-			result->setPixel(x, y, linear(boxsample));
+			result->setPixel(x, y, bilinear(boxsample));
 		}
 }
 
 IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &image) const {
+	std::clock_t start;
+	double duration;
+	start = std::clock();
 	IntensityImage * result = ImageFactory::newIntensityImage();
 	int targetsize = 40000;
 	int originsize = image.getWidth() * image.getHeight();
@@ -71,6 +78,8 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 		result->set(ratio * image.getWidth(), ratio * image.getHeight());
 		resize(image, result, ratio);
 	}
+	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+	std::cout << "Time: " << duration << std::endl;
 	return result;
 }
 

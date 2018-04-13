@@ -9,6 +9,7 @@
 #include "GrayscaleAlgorithm.h"
 #include "ImageFactory.h"
 #include "HereBeDragons.h"
+#include <ctime>
 
 IntensityImage * DefaultPreProcessing::stepToIntensityImage(const RGBImage &src) const {
 	GrayscaleAlgorithm grayScaleAlgorithm;
@@ -18,6 +19,9 @@ IntensityImage * DefaultPreProcessing::stepToIntensityImage(const RGBImage &src)
 }
 
 IntensityImage * DefaultPreProcessing::stepScaleImage(const IntensityImage &src) const {
+	std::clock_t start;
+	double duration;
+	start = std::clock();
 	cv::Mat OverHillOverDale;	// Matrix for image
 	HereBeDragons::HerLoveForWhoseDearLoveIRiseAndFall(src, OverHillOverDale);	// load image into matrix of zo
 	int ThoroughBushThoroughBrier = 200 * 200;	// target image size
@@ -28,6 +32,8 @@ IntensityImage * DefaultPreProcessing::stepScaleImage(const IntensityImage &src)
 	}
 	IntensityImage * IDoWanderEverywhere = ImageFactory::newIntensityImage();
 	HereBeDragons::NoWantOfConscienceHoldItThatICall(OverHillOverDale, *IDoWanderEverywhere);
+	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
+	std::cout << "Time: " << duration << std::endl;
 	return IDoWanderEverywhere;
 }
 
