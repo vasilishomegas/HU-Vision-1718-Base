@@ -92,13 +92,12 @@ IntensityImage * StudentPreProcessing::stepScaleImage(const IntensityImage &imag
 	int targetsize = 40000;
 	int originsize = image.getWidth() * image.getHeight();
 	
-	//if (targetsize < originsize)
-	//{
-		double ratio = 1.0 ;// sqrt(originsize / targetsize);	// ratio tussen oud en nieuw bepalen
+	if (targetsize < originsize)
+	{
+		double ratio = 1.0 / sqrt(originsize / targetsize);
 		result->set(ratio * image.getWidth(), ratio * image.getHeight());
 		resize(image, result, ratio);
-	//}
-	//else { std::cout << image.getWidth() << ", " << image.getHeight() << std::endl; }
+	}
 	duration = (std::clock() - start) / (double)CLOCKS_PER_SEC;
 	std::cout << "Time: " << duration << std::endl;
 	return result;
